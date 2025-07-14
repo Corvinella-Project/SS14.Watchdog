@@ -28,7 +28,7 @@ namespace SS14.Watchdog.Components.Updates
         private bool _newPackaging;
 
         // CP-Start
-        private readonly string _dotnetEnvironment;
+        private readonly string _dotnetExecutablePath;
         // CP-end.
 
         public UpdateProviderGit(ServerInstance serverInstanceInstance, UpdateProviderGitConfiguration configuration, ILogger<UpdateProviderGit> logger, IConfiguration config)
@@ -41,7 +41,7 @@ namespace SS14.Watchdog.Components.Updates
             _repoPath = Path.Combine(_serverInstance.InstanceDir, "source");
             _configuration = config;
 
-            _dotnetEnvironment = configuration.DotnetEnvironment; // CP
+            _dotnetExecutablePath = configuration.DotnetExecutablePath; // CP
         }
 
         private async Task<int> CommandHelper(string cd, string command, string[] args, CancellationToken cancel = default)
@@ -263,10 +263,10 @@ namespace SS14.Watchdog.Components.Updates
                 {
                     _newPackaging = true;
 
-                    await CommandHelperChecked("Failed to dotnet restore", _repoPath, $"{_dotnetEnvironment} dotnet", new[] { "restore" }, cancel);
+                    await CommandHelperChecked("Failed to dotnet restore", _repoPath, $"{_dotnetExecutablePath}", new[] { "restore" }, cancel);
 
                     await CommandHelperChecked("Failed to build Content Packaging",
-                        _repoPath, $"{_dotnetEnvironment} dotnet", new[] { "build", "Content.Packaging","--configuration", "Release", "--no-restore", "/m" }, cancel);
+                        _repoPath, $"{_dotnetExecutablePath}", new[] { "build", "Content.Packaging","--configuration", "Release", "--no-restore", "/m" }, cancel);
                 }
                 else
                     _newPackaging = false;
@@ -276,7 +276,7 @@ namespace SS14.Watchdog.Components.Updates
                     if (_newPackaging)
                     {
                         await CommandHelperChecked("Failed to build Hybrid ACZ package with Content Packaging",
-                            _repoPath, $"{_dotnetEnvironment} dotnet", new[] { "run", "--project", "Content.Packaging", "server", "--platform", serverPlatform, "--hybrid-acz" }, cancel);
+                            _repoPath, $"{_dotnetExecutablePath}", new[] { "run", "--project", "Content.Packaging", "server", "--platform", serverPlatform, "--hybrid-acz" }, cancel);
                     }
                     else
                         await CommandHelperChecked("Failed to build Hybrid ACZ package with Python", _repoPath, "python", new[] {"Tools/package_server_build.py", "--hybrid-acz", "-p", serverPlatform}, cancel);
@@ -294,7 +294,7 @@ namespace SS14.Watchdog.Components.Updates
                     if (_newPackaging)
                     {
                         await CommandHelperChecked("Failed to build server packages with Content Packaging",
-                            _repoPath, $"{_dotnetEnvironment} dotnet", new[] { "run", "--project", "Content.Packaging", "server", "--platform", serverPlatform}, cancel);
+                            _repoPath, $"{_dotnetExecutablePath}", new[] { "run", "--project", "Content.Packaging", "server", "--platform", serverPlatform}, cancel);
                     }
                     else
                         await CommandHelperChecked("Failed to build server packages with Python", _repoPath, "python", new[] {"Tools/package_server_build.py", "-p", serverPlatform}, cancel);
@@ -305,7 +305,7 @@ namespace SS14.Watchdog.Components.Updates
                     if (_newPackaging)
                     {
                         await CommandHelperChecked("Failed to build client packages with Content Packaging",
-                            _repoPath, $"{_dotnetEnvironment} dotnet", new[] { "run", "--project", "Content.Packaging", "client", "--no-wipe-release"}, cancel);
+                            _repoPath, $"{_dotnetExecutablePath}", new[] { "run", "--project", "Content.Packaging", "client", "--no-wipe-release"}, cancel);
                     }
                     else
                         await CommandHelperChecked("Failed to build client packages", _repoPath, "python", new[] {"Tools/package_client_build.py"}, cancel);
