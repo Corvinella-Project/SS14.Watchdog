@@ -9,6 +9,6 @@ namespace SS14.Watchdog.Configuration.Updates
         /// <summary> Hybrid ACZ hosts the client zip on the status host for easier port forwarding (no need to forward the watchdog port). </summary>
         public bool HybridACZ { get; set; } = true;
         /// <summary> Path to the dotnet executable. </summary>
-        public string DotnetExecutablePath { get; set; } = "";
+        public string DotnetExecutablePath { get; set; } = "dotnet";
     }
 }
